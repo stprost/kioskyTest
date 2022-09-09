@@ -1,0 +1,27 @@
+version: "2"
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+  kiosky-get:
+    build: kioskyGetService/
+    image: kiosky-get-service
+    ports:
+      - 8081:8081
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - rabbitmq
+  kiosky-send:
+    build: kioskySendService/
+    image: kiosky-send-service
+    ports:
+      - 8080:8080
+    environment:
+      - SPRING_RABBITMQ_HOST=rabbitmq
+    depends_on:
+      - kiosky-get
